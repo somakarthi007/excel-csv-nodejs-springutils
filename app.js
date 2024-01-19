@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 5000;
 const fs = require('fs');
+const {ExcelDateToJSDate} = require("./utils")
 
 app.use(express.json({limit: '50mb'}))
 
@@ -26,10 +27,20 @@ app.post("/xlsx/:sheetNumber", (req, res) => {
     if(sheetNumber != null){
         var sheet = obj[sheetNumber];
         //loop through all rows in the sheet
-        for(var j = 0; j < sheet['data'].length; j++)
-        {
-                //add the row to the rows array
-                rows.push(sheet['data'][j]);
+        for(var j = 0; j < sheet['data'].length; j++){
+            //   cols = []
+            //     for(var k = 0; k < sheet['data'][j].length; k++){
+            //         //add the col to the cols array
+            //         let col_data = sheet['data'][j][k];
+            //         console.log("ColData: "  + col_data)
+            //         if(col_data != null && col_data != undefined && col_data.toString().split('.').length > 1 && col_data.toString().split('.')[1].length > 10){
+            //             cols.push(ExcelDateToJSDate(parseFloat(col_data)))
+            //         }
+            //         cols.push(sheet['data'][j][k])
+            //     }
+            //     //add the row to the rows array
+            //     rows.push(cols);
+        rows.push(sheet['data'][j]);
         }
     }
 
@@ -71,6 +82,17 @@ app.post("/xlsb/:sheetNumber", (req, res) => {
         for(var j = 0; j < sheet['data'].length; j++)
         {
                 //add the row to the rows array
+                cols = []
+                for(var k = 0; k < sheet['data'][j].length; k++){
+                    //add the col to the cols array
+                    let col_data = sheet['data'][j][k];
+                    if(col_data != null && col_data != undefined && col_data.toString().split('.').length > 1 && col_data.toString().split('.')[1].length > 9){
+                        cols.push(ExcelDateToJSDate(parseFloat(col_data)))
+                    }
+                    cols.push(sheet['data'][j][k])
+                }
+                //add the row to the rows array
+                rows.push(cols);
                 rows.push(sheet['data'][j]);
         }
     }
